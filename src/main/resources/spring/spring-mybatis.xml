@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <!--dataSource数据源配置，使用阿里巴巴druid连接池-->
+    <bean id="druid" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${mysql.url}"></property>
+        <property name="driverClassName" value="${mysql.driverName}"></property>
+        <property name="username" value="${mysql.username}"></property>
+        <property name="password" value="${mysql.password}"></property>
+
+        <property name="maxActive" value="${jdbc.maxActive}"></property>
+        <property name="minIdle" value="${jdbc.minIdle}"></property>
+        <!--初始化连接数-->
+        <property name="initialSize" value="${jdbc.initialSize}"></property>
+        <!--获取连接等待的超时时间-->
+        <property name="maxWait" value="${jdbc.maxWait}"></property>
+        <!--间隔多久进行一次检测，检测需要关闭的空闲连接-->
+        <property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeMillis}"></property>
+        <!--一个连接在连接池中最小的生存时间-->
+        <property name="minEvictableIdleTimeMillis" value="${jdbc.minMillis}"></property>
+        <!--验证连接是否有效-->
+        <property name="validationQuery" value="${mysql.validationQuery}"></property>
+        <property name="testWhileIdle" value="${jdbc.testWhileIdle}"></property>
+        <property name="testOnReturn" value="${jdbc.testOnReturn}"></property>
+        <property name="testOnBorrow" value="${jdbc.testOnBorrow}"></property>
+    </bean>
+    <bean id = "sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="druid"></property>
+        <property name="mapperLocations">
+            <list>
+                <value>classpath:com/guojh/project/mapper/*-mapper.xml</value>
+            </list>
+        </property>
+        <!--定义实体缺省包-->
+        <property name="typeAliasesPackage" value="com.guojh.project.entity"></property>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.guojh.project.dao"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+    <bean id="txM" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="druid"></property>
+    </bean>
+
+    <context:component-scan base-package="com.guojh.project" annotation-config="true">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <context:property-placeholder location="classpath:mybatis.properties" />
+    <tx:annotation-driven transaction-manager="txM"/>
+
+</beans>
