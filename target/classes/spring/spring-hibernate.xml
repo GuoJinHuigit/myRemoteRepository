@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                          http://www.springframework.org/schema/beans/spring-beans.xsd
+                          http://www.springframework.org/schema/aop
+							 http://www.springframework.org/schema/aop/spring-aop.xsd
+							 http://www.springframework.org/schema/tx
+							 http://www.springframework.org/schema/tx/spring-tx.xsd
+                          http://www.springframework.org/schema/context
+                          http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <!--dataSource 连接池-->
+    <bean id = "druid" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${mysql.url}"></property>
+        <property name="driverClassName" value="${mysql.driverName}"></property>
+        <property name="username" value="${mysql.username}"></property>
+        <property name="password" value="${mysql.password}"></property>
+        <!--最大连接数-->
+        <property name="maxActive" value="${jdbc.maxActive}"></property>
+        <!--最小空闲连接数-->
+        <property name="minIdle" value="${jdbc.minIdle}"></property>
+        <!--初始化连接数-->
+        <property name="initialSize" value="${jdbc.initialSize}"></property>
+        <!--获取连接等待的超时时间-->
+        <property name="maxWait" value="${jdbc.maxWait}"></property>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeMillis}"></property>
+        <!--一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${jdbc.minMillis}"></property>
+        <!--验证连接是否有效-->
+        <property name="validationQuery" value="${mysql.validationQuery}"></property>
+        <property name="testWhileIdle" value="${jdbc.testWhileIdle}"></property>
+        <property name="testOnBorrow" value="${jdbc.testOnBorrow}"></property>
+        <property name="testOnReturn" value="${jdbc.testOnReturn}"></property>
+        <property name="removeAbandoned" value="true" />
+                <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="1800" />
+        <!-- 关闭abanded连接时输出错误日志 -->
+        <property name="logAbandoned" value="true" />
+        <!-- 监控数据库 -->
+        <!-- <property name="filters" value="stat" /> -->
+        <property name="filters" value="mergeStat" />
+    </bean>
+
+    <!--hibernate主要配置，基于注解生成xml的配置，使用AnnotationSessionFactoryBean来实现-->
+    <bean id = "sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="druid"></property>
+        <property name="hibernateProperties">
+            <props>
+                <!-- web项目启动时是否更新表结构
+                 hibernate根据实体自动生成数据库表-->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <!-- 系统使用的数据库方言，也就是使用的数据库类型 -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <!-- 是否打印Hibernate生成的SQL到控制台 -->
+                <prop key="hibernate.show_sql">true</prop>
+                <!-- 是否格式化打印出来的SQL -->
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="javax.persistence.validation.mode">none</prop>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+            </props>
+        </property>
+        <!-- 自动扫描注解方式配置的hibernate类文件 -->
+         <property name="packagesToScan">
+            <list>
+               <value>com.guojh.project.entity.*</value>
+           </list>
+        </property>
+        <!-- 映射类的注册 -->
+        <property name="annotatedClasses">
+            <list>
+                <value>com.guojh.project.entity.User</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--引入外部配置文件-->
+    <context:property-placeholder location="classpath:hibernate.properties"/>
+    
+
+    <!--hibernate的事务管理器-->
+    <bean name="txM" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!-- 注解方式配置事物 -->
+    <!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+
+    <!-- 告知Spring那些包中的类中有注解，需要扫描解析 -->
+    <context:component-scan base-package="com.guojh.project" annotation-config="true">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <tx:advice id="transactionManagers" transaction-manager="txM">
+        <tx:attributes>
+            <tx:method name="query*" propagation="SUPPORTS"/>
+            <tx:method name="select*" propagation="SUPPORTS"/>
+            <!-- 【*】其余方法 -->
+            <tx:method name="*" isolation="READ_COMMITTED" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+    <!-- 编织 -->
+    <aop:config>
+        <aop:pointcut expression="execution(* com.guojh.project.service.*.*(..))" id="pc44"/>
+        <aop:advisor advice-ref="transactionManagers" pointcut-ref="pc44"/>
+    </aop:config>
+
+</beans>
