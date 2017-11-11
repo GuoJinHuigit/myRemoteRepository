@@ -102,7 +102,7 @@ public class HibernateTest {
         Session session = sessionFactory.getCurrentSession();
         Transaction tx = session.beginTransaction();//开启事物
         String userId = "3f84e8cc-7992-41c5-8c9c-0b26ad852609";
-        User user = session.get(User.class,userId);
+        User user = (User) session.get(User.class,userId);
         session.delete(user);
         tx.commit();
 
@@ -120,7 +120,7 @@ public class HibernateTest {
         Session session = sessionFactory.getCurrentSession();//根据ID删除，设置其他属性不起作用
         Transaction tx = session.beginTransaction();//开启事物
         String userId="3f84e8cc-7992-41c5-8c9c-0b26ad852609";
-        User user =  session.load(User.class,userId);
+        User user = (User) session.load(User.class,userId);
         session.delete(user);
         tx.commit();
     }

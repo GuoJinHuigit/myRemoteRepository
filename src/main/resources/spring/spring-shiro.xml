@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--配置shiroFilter-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--配置shiroFiletr的loginUrl-->
+        <property name="loginUrl" value="/back/show/login.jsp"></property>
+        <!--配置shiro的心脏-->
+        <property name="securityManager" value=""></property>
+    </bean>
+
+    <!--配置securityManager-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!--配置realm数据源-->
+       <!-- <property name="realms">
+            <list>
+                <ref></ref>
+                <ref></ref>
+            </list>
+        </property>-->
+        <!--记住我，记住cookie-->
+        <property name="rememberMeManager" ref=""></property>
+    </bean>
+
+    <!--声明cookieremnerManaget-->
+    <bean id="cookieManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+        <property name="cookie" ref=""></property>
+    </bean>
+
+    <!--创建一个cookie对象-->
+    <bean id="cookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <property name="name" value="guojh"></property>
+        <!-- 声明cookie的最大存活时间,即生命周期 -->
+        <property name="maxAge" value="300"></property>
+    </bean>
+    <!-- 配置数据源 -->
+    <bean id="" class=""></bean>
+
+</beans>

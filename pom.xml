@@ -110,11 +110,11 @@
       <version>${spring.version}</version>
     </dependency>
 
-    <dependency>
+    <!--<dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-asm</artifactId>
       <version>3.0.5.RELEASE</version>
-    </dependency>
+    </dependency>-->
     <!-- mybatis核心包 -->
     <dependency>
       <groupId>org.mybatis</groupId>
@@ -263,7 +263,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.1.5.Final</version>
+      <version>4.3.7.Final</version>
     </dependency>
     <!--标准的 JAVA 事务（跨数据库）处理接口-->
     <dependency>
@@ -334,17 +334,13 @@
       <artifactId>cglib</artifactId>
       <version>3.2.4</version>
     </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>3.3.1</version>
-    </dependency>
 
     <!--junit测试包-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>

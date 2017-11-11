@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                          http://www.springframework.org/schema/beans/spring-beans.xsd
+                          http://www.springframework.org/schema/mvc
+                          http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                          http://www.springframework.org/schema/context
+                          http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <!--spring组件扫描-->
+    <context:component-scan base-package="com.guojh.project" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:include-filter>
+    </context:component-scan>
+
+    <!--注解开发驱动配置-->
+    <mvc:annotation-driven/>
+    <!--    <mvc:message-converters register-defaults="true">
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        &lt;!&ndash; 是否输出为null的字段，默认false &ndash;&gt;
+                        <value>WriteMapNullValue</value>
+                        &lt;!&ndash; date日期转换器 &ndash;&gt;
+                        <value>WriteDateUseDateFormat</value>
+                        &lt;!&ndash; 输出key时是否使用双引号 &ndash;&gt;
+                        <value>QuoteFieldNames</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>-->
+
+    <!--视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <!--静态资源解决方案-->
+    <mvc:default-servlet-handler/>
+
+    <!--文件上传解析器-->
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 允许上传文件的最大的大小，超出则会报异常 -->
+        <property name="maxUploadSize" value="-1"></property>
+        <property name="defaultEncoding" value="UTF-8"></property>
+    </bean>
+
+</beans>

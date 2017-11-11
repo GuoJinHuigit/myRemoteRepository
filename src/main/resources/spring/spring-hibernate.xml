@@ -62,7 +62,7 @@
                 <!-- 是否格式化打印出来的SQL -->
                 <prop key="hibernate.format_sql">true</prop>
                 <prop key="javax.persistence.validation.mode">none</prop>
-                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
             </props>
         </property>
         <!-- 自动扫描注解方式配置的hibernate类文件 -->
@@ -97,16 +97,15 @@
 
     <tx:advice id="transactionManagers" transaction-manager="txM">
         <tx:attributes>
-            <tx:method name="query*" propagation="SUPPORTS"/>
-            <tx:method name="select*" propagation="SUPPORTS"/>
+            <tx:method name="query*" propagation="REQUIRED" read-only="true"/>
+            <tx:method name="select*" propagation="REQUIRED" read-only="true" rollback-for="java.lang.Exception"/>
             <!-- 【*】其余方法 -->
             <tx:method name="*" isolation="READ_COMMITTED" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
         </tx:attributes>
     </tx:advice>
     <!-- 编织 -->
     <aop:config>
-        <aop:pointcut expression="execution(* com.guojh.project.service.*.*(..))" id="pc44"/>
+        <aop:pointcut expression="execution(* com.guojh.project.dao.*.*(..))" id="pc44"/>
         <aop:advisor advice-ref="transactionManagers" pointcut-ref="pc44"/>
     </aop:config>
-
 </beans>
